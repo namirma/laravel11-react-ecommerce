@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/**
+ * @property mixed $delivered_at
+ * @property mixed $created_at
+ * @property mixed $id
+ * @property mixed $products
+ * @property mixed $user
+ * @property mixed $qty
+ * @property mixed $coupon
+ * @property mixed $total
+ */
+class OrderResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'user' => $this->user,
+            'products' => $this->products,
+            'coupon' => $this->coupon,
+            'total' => $this->total,
+            'qty' => $this->qty,
+            'created_at' => $this->created_at->diffForHumans(),
+            'delivered_at' => $this->delivered_at ?
+                Carbon::parse($this->delivered_at)->diffForHumans()
+                :
+                null
+        ];
+    }
+}
