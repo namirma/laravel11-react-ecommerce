@@ -1,7 +1,7 @@
 {
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Laravel 11 REST API + Blade admin for a small e-commerce platform (products, orders, coupons, reviews).",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
