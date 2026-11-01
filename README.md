@@ -27,7 +27,7 @@ graph LR
 The application is structured as a decoupled monorepo:
 * **`e-backend/`**: Laravel 11 API service handling authentication, product catalogs, discount coupon validation, order lifecycles, and reviews. It also serves a Blade admin panel (see `e-backend/routes/web.php`).
 * **`frontend/`**: React 18 frontend leveraging Redux Toolkit for unified cart, auth, and catalog state management, paired with Stripe Elements for checkout.
-* **`img/`**: Sample product images kept in the repository. They are not referenced by the application code itself; product images are managed through the admin panel.
+* **`img/`**: Sample product images kept intentionally in the repository (21 files, about 4.0 MB after removing one exact duplicate — see below). They are placeholder/demo product photos (apparel and similar) for manual upload through the admin panel, not product data loaded by the code. Verified 2026-11-01: no `img/` filename is referenced by application code, Blade views, frontend code, or seeders, and the seeders contain no product seed data (admin seeder only); product images at runtime come from admin-panel uploads to `storage/images/products/`, not from `img/`. The one exact duplicate copy, `img/t1_werkpants_mens_olive_flat_lay_4825e693-f588-4813-bff0-1d4c46ce82ce (1).jpg` (identical MD5 to the same-named file without ` (1)`), was removed; the original file is kept, so no unique sample image was lost.
 
 ---
 
@@ -75,13 +75,17 @@ laravel11-react-ecommerce/
 │   │   └── main.jsx            # Application entrypoint
 │   ├── package.json
 │   └── vite.config.js
-└── img/                        # Sample product images (not code-referenced)
+└── img/                        # 21 sample product images, ~4.0 MB (not code-referenced; see above)
 ```
 
 > Note: there is no app at the repository root. Do not run `npm install` at the
 > root — the JavaScript projects live in `frontend/` (the storefront) and in
 > `e-backend/` (Blade admin assets only). The root `package.json` that used to
-> duplicate one frontend dependency has been removed.
+> duplicate one frontend dependency has been removed. Likewise, `react-simple-star-rating`
+> was removed from `e-backend/package.json` and its lockfile: it is used only by
+> `frontend/` (where it is still listed), while `e-backend/resources/js/` imports
+> only `bootstrap` (axios) — so the e-backend listing was a stray copy, not a real
+> dependency of the Blade admin assets.
 
 ---
 
