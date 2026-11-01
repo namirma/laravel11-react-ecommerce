@@ -9,7 +9,7 @@
 
 > A decoupled Fullstack E-Commerce solution featuring a **Laravel 11 RESTful API**
 > backend and a responsive **React 18 Single-Page Application (SPA)** powered by
-> **Redux Toolkit** and **Vite**. This is a single-commit starter project: there
+> **Redux Toolkit** and **Vite**. This is a starter project: there
 > is no CI pipeline and no live deployment claim here — run it locally as below.
 
 ---
@@ -36,10 +36,10 @@ The application is structured as a decoupled monorepo:
 ### 🔧 Backend (`e-backend`) — Laravel 11
 - **Product & Inventory Engine:** Support for complex product variations including multi-color and multi-size combinations.
 - **Dynamic Coupon System:** Percentage and fixed discount rules with expiration validation and minimum purchase thresholds.
-- **Order Management:** Lifecycle tracking from checkout to fulfillment with customer invoice generation.
+- **Order Management:** Lifecycle tracking from checkout to fulfillment and order status progression.
 - **Customer Reviews & Ratings:** Verified review submission with moderation and aggregate star ratings.
-- **Admin Dashboard APIs:** Dedicated endpoints for catalog management, sales reporting, and order status progression, plus a Blade admin panel.
-- **Security & Best Practices:** Form request validation, Eloquent API resources, CORS configuration, and credential isolation (secrets live in `.env`, never in the code).
+- **Admin Dashboard APIs:** Dedicated endpoints for catalog management and order status progression, plus a Blade admin panel.
+- **Security & Best Practices:** Form request validation, Eloquent API resources, Laravel's framework-default CORS handling, and credential isolation (secrets live in `.env`, never in the code).
 
 ### 💻 Frontend (`frontend`) — React 18 & Vite
 - **Fast DX:** Bundled with Vite for instant Hot Module Replacement (HMR).
@@ -130,7 +130,7 @@ cannot complete a payment — that is expected, not a bug in the demo.
 
 The Blade admin panel is served by the backend itself: open
 `http://localhost:8000/` after `php artisan serve` and sign in with the
-seeded admin account (see `e-backend/database/seeders/AdminSeeder.php`).
+seeded admin account (see `e-backend/database/seeders/AdminSeeder.php` and `e-backend/database/factories/AdminFactory.php`, which defines the seeded account).
 
 ---
 
@@ -144,6 +144,16 @@ seeded admin account (see `e-backend/database/seeders/AdminSeeder.php`).
   only. Do not commit a real `.env` file.
 
 ---
+
+## 🔄 Dependency & upgrade status (verified 2026-11-01)
+
+- **Frontend build (current lockfile):** `npm ci && npm run build` in `frontend/` passes (358 modules). The pre-existing >500 kB chunk-size warning remains.
+- **Within-major updates — verified locally, NOT pushed:** `npm update` in a throwaway copy (Node 24) moved, among others, Redux Toolkit 2.2.7 → 2.13.0, axios 1.7.4 → 1.21.0, Bootstrap 5.3.3 → 5.3.8, Vite 5.4.0 → 5.4.21, React Router 6.26.0 → 6.30.6, and Stripe JS 4.3.0 → 4.10.0, and the build still passed (5.17 s). These are not in the pushed tree because `frontend/package-lock.json` (175 KB) cannot be pushed through the GitHub App tool used here (single-argument limit, same limit that blocked the 848 KB elitezone-frontend lockfile); pushing `package.json` alone would desync `npm ci`. To apply them, run `cd frontend && npm update && npm run build` locally and commit the regenerated lockfile.
+- **React 19 experiment — build passes, NOT pushed:** in a separate throwaway copy, React/React DOM 18.3.1 → 19.x (with `@types/react` 19) built successfully (358 modules, 8.00 s) on Vite 5, with only a peer warning from `react-spinners@0.14.1` (peer range ^16/17/18). A React 19 upgrade therefore needs a coordinated step that also bumps `react-spinners` (0.17.x) and smoke-tests checkout/Stripe at runtime — it is not a one-line push.
+- **Dead frontend dependencies (0 imports in `frontend/src/`):** `lodash-es`, `react-fast-compare`, `react-swipeable`, `resize-observer-polyfill`, `prop-types`. Removing them also requires the regenerated lockfile above, so they are listed here rather than removed from `package.json` alone.
+- **Lint status:** `npm run lint` in `frontend/` currently reports 96 problems (85 errors, 11 warnings), mostly unused `React` imports from the pre-Vite-template era and missing prop-types validation. The production build does not run ESLint, so the build passes, but a lint cleanup pass is still open.
+- **Laravel 12 / PHP major upgrade — NOT attempted:** there is no PHP/Composer runtime in this environment to run migrations or tests, and `e-backend/composer.lock` (285 KB) cannot be pushed through the same tool limit. The same reason leaves `e-backend/composer.json`'s skeleton name `laravel/laravel` unchanged (its description was already corrected); changing the name alone would desync the lockfile's content hash.
+- **Stripe:** still test-mode only. No live Stripe test was run — it needs real test keys plus a running API, which are not available here.
 
 ## 📄 License
 This repository is released under the MIT License — see [LICENSE](LICENSE).
